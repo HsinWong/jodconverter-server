@@ -1,0 +1,16 @@
+server:
+  port: 9980
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+jodconverter:
+  local:
+    enabled: true
+    port-numbers: 2002,2003
+  online:
+    enabled: false
+    url: http://localhost:${server.port}/
