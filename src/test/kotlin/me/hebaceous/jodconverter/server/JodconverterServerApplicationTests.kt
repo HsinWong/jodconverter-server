@@ -22,8 +22,8 @@ class JodconverterServerApplicationTests {
 
     @Test
     fun testConvert() {
-        documentConverter.convert(File("/Users/hebaceous/Desktop/data.txt"))
-                .to(File("/Users/hebaceous/Desktop/test.html"))
+        documentConverter.convert(File("/Users/hebaceous/Downloads/FYB_T_51000-2016_基础数据信息技术规范.docx"))
+                .to(File("/Users/hebaceous/Downloads/FYB_T_51000-2016_基础数据信息技术规范.html"))
                 .execute()
     }
 
