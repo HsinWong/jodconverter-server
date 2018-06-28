@@ -49,7 +49,7 @@ class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConve
                 }
             }
             if (isToHtml) {
-                val process = Runtime.getRuntime().exec("pdf2htmlEX --dest-dir " + targetTempFile.parent + " " + targetTempFile.absolutePath)
+                val process = Runtime.getRuntime().exec("pdf2htmlEX --no-drm 1 --dest-dir ${targetTempFile.parent} ${targetTempFile.absolutePath}")
                 if (process.waitFor() != 0) {
                     logger.error("convert ${sourceTempFile.absolutePath} to html failed")
                     return@flatMap ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).body(fromObject("convert to html failed"))
