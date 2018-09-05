@@ -12,6 +12,7 @@ import java.io.File
 @RunWith(SpringRunner::class)
 @SpringBootTest(
         "jodconverter.online.enabled=true",
+        "jodconverter.local.enabled=false",
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
 class JodconverterServerApplicationTests {
@@ -22,8 +23,8 @@ class JodconverterServerApplicationTests {
 
     @Test
     fun testConvert() {
-        documentConverter.convert(File("/Users/hebaceous/Downloads/FYB_T_51000-2016_基础数据信息技术规范.docx"))
-                .to(File("/Users/hebaceous/Downloads/FYB_T_51000-2016_基础数据信息技术规范.html"))
+        documentConverter.convert(File("C:\\Users\\Hebaceous\\Desktop\\336a6e77-f0b0-4e1e-b773-28482da47769.docx"))
+                .to(File("x.png"))
                 .execute()
     }
 

@@ -13,4 +13,4 @@ jodconverter:
     port-numbers: 2002,2003
   online:
     enabled: false
-    url: http://localhost:${server.port}/
+    url: http://192.168.60.59:${server.port}/

@@ -1,6 +1,7 @@
 package me.hebaceous.jodconverter.server.config
 
 import me.hebaceous.jodconverter.server.handler.JodconverterHandler
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -12,6 +13,7 @@ import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.RouterFunctions.route
 
 @Configuration
+@ConditionalOnProperty(prefix = "jodconverter.local", value = ["enabled"])
 class WebFluxConfig(val jodconverterHandler: JodconverterHandler) : WebFluxConfigurer {
 
     @Bean

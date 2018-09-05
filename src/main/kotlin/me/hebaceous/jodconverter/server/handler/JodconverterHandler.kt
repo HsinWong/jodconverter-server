@@ -3,6 +3,7 @@ package me.hebaceous.jodconverter.server.handler
 import org.jodconverter.DocumentConverter
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.codec.multipart.FilePart
@@ -18,6 +19,7 @@ import reactor.core.publisher.toMono
 import java.io.File
 
 @Component
+@ConditionalOnProperty(prefix = "jodconverter.local", value = ["enabled"])
 class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConverter: DocumentConverter) {
     val logger = LoggerFactory.getLogger(JodconverterHandler::class.java)!!
     val jodconverterTempDir = createTempDir("jodconverter")
