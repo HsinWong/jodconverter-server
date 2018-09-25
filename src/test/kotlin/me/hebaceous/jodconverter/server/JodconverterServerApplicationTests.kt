@@ -23,8 +23,8 @@ class JodconverterServerApplicationTests {
 
     @Test
     fun testConvert() {
-        documentConverter.convert(File("C:\\Users\\Hebaceous\\Desktop\\336a6e77-f0b0-4e1e-b773-28482da47769.docx"))
-                .to(File("x.png"))
+        documentConverter.convert(File("/Users/hebaceous/Downloads/8ba24ac7-0f23-45b7-a5c7-94ce74b3520a.docx"))
+                .to(File("x.html"))
                 .execute()
     }
 
