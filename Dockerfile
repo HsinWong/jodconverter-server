@@ -12,6 +12,7 @@ COPY sources.list /etc/apt/sources.list
 RUN apt-get update && apt-get -y upgrade && apt-get install -y locales-all openjdk-8-jdk libreoffice pdf2htmlex inotify-tools psmisc && rm -rf /var/lib/apt/lists/*
 
 COPY app.jar start.sh /
+RUN chmod a+x start.sh
 
 EXPOSE 9980
 
