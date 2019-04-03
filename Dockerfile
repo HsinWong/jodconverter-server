@@ -8,6 +8,7 @@ ENV LC_ALL zh_CN.UTF-8
 # 外挂字体
 VOLUME ["/tmp", "/usr/share/fonts/custom"]
 
+RUN apt-get update && apt-get install -y apt-transport-https
 COPY sources.list /etc/apt/sources.list
 RUN apt-get update && apt-get -y upgrade && apt-get install -y locales-all openjdk-8-jdk libreoffice pdf2htmlex inotify-tools psmisc && rm -rf /var/lib/apt/lists/*
 
