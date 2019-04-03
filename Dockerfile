@@ -2,20 +2,21 @@ FROM ubuntu:16.04
 
 LABEL maintainer="hsinwong@foxmail.com"
 
+# 中文字体支持
 ENV LC_ALL zh_CN.UTF-8
 
-COPY fonts/* /usr/share/fonts/
-COPY sources.list /etc/apt/
+# 外挂字体
+VOLUME ["/tmp", "/usr/share/fonts/custom"]
 
-VOLUME /tmp
+COPY sources.list /etc/apt/sources.list
+RUN apt-get update && apt-get -y upgrade && apt-get install -y locales-all openjdk-8-jdk libreoffice pdf2htmlex inotify-tools psmisc && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get -y upgrade && apt-get install -y locales-all openjdk-8-jdk libreoffice pdf2htmlex && rm -rf /var/lib/apt/lists/*
-
-ADD jodconverter-server-0.0.1-SNAPSHOT.jar app.jar
-RUN bash -c 'touch /app.jar'
+COPY app.jar start.sh /
 
 EXPOSE 9980
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+# 指定启动脚本
+ENTRYPOINT ["./start.sh"]
 
-# docker run -d -p 9980:9980 --restart unless-stopped registry.cn-hangzhou.aliyuncs.com/hsinwong/jodconverter-server
+# 字体文件放在 /var/lib/docker/volumes/fonts/_data/ 目录中
+# docker run -d -p 9980:9980 -v fonts:/usr/share/fonts/custom --restart unless-stopped --name jodconverter-server registry.cn-hangzhou.aliyuncs.com/hsinwong/jodconverter-server
