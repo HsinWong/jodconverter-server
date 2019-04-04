@@ -23,8 +23,8 @@ class JodconverterServerApplicationTests {
 
     @Test
     fun testConvert() {
-        documentConverter.convert(File("/Users/hebaceous/Downloads/8ba24ac7-0f23-45b7-a5c7-94ce74b3520a.docx"))
-                .to(File("x.html"))
+        documentConverter.convert(File("a4.docx"))
+                .to(File("a4.pdf"))
                 .execute()
     }
 
