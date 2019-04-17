@@ -3,6 +3,7 @@ package me.hebaceous.jodconverter.server.handler
 import org.jodconverter.DocumentConverter
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -20,7 +21,9 @@ import java.io.File
 
 @Component
 @ConditionalOnProperty(prefix = "jodconverter.local", value = ["enabled"])
-class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConverter: DocumentConverter) {
+class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConverter: DocumentConverter,
+                          @Value("\${mupdf.max-width}") val maxWidth: Int,
+                          @Value("\${mupdf.max-height}") val maxHeight: Int) {
     val logger = LoggerFactory.getLogger(JodconverterHandler::class.java)!!
     val jodconverterTempDir = createTempDir("jodconverter")
 
@@ -28,6 +31,7 @@ class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConve
         return request.body(BodyExtractors.toMultipartData()).flatMap {
             val format = (it?.getFirst("format") as FormFieldPart?)?.value() ?: request.pathVariable("format")
             val isToHtml = format.equals("html", true)
+            val isToCbz = format.equals("cbz", true)
 
             val data = it?.getFirst("data") as FilePart?
                     ?: return@flatMap ServerResponse.badRequest().body(fromObject("missing data"))
@@ -37,7 +41,7 @@ class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConve
 
             val sourceTempFile = createTempFile(suffix = ".$sourceFileExtension", directory = jodconverterTempDir)
             data.transferTo(sourceTempFile).subscribe()
-            var targetTempFile = File(sourceTempFile.absolutePath.substringBeforeLast('.') + "." + if (isToHtml) "pdf" else format)
+            var targetTempFile = File(sourceTempFile.absolutePath.substringBeforeLast('.') + "." + if (isToHtml || isToCbz) "pdf" else format)
 
             if (isFromPdf)
                 targetTempFile = sourceTempFile
@@ -58,6 +62,17 @@ class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConve
                 }
                 logger.info("convert ${targetTempFile.absolutePath} to html success")
                 targetTempFile = File(targetTempFile.absolutePath.substringBeforeLast('.') + ".html")
+            }
+
+            if (isToCbz) {
+                val targetTempFileName = targetTempFile.absolutePath.substringBeforeLast('.') + ".cbz"
+                val process = Runtime.getRuntime().exec("mutool convert -O width=$maxWidth -O height=$maxHeight -o $targetTempFileName ${targetTempFile.absolutePath}")
+                if (process.waitFor() != 0) {
+                    logger.error("convert ${sourceTempFile.absolutePath} to cbz failed")
+                    return@flatMap ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).body(fromObject("convert to cbz failed"))
+                }
+                logger.info("convert ${targetTempFile.absolutePath} to cbz success")
+                targetTempFile = File(targetTempFileName)
             }
             ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(targetTempFile.readBytes().toMono(), ByteArray::class.java)
         }

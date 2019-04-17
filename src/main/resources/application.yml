@@ -14,3 +14,7 @@ jodconverter:
   online:
     enabled: false
     url: http://localhost:${server.port}/
+
+mupdf:
+  max-width: 1527
+  max-height: 1527

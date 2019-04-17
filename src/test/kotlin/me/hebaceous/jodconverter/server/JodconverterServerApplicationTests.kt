@@ -23,8 +23,8 @@ class JodconverterServerApplicationTests {
 
     @Test
     fun testConvert() {
-        documentConverter.convert(File("a4.docx"))
-                .to(File("a4.pdf"))
+        documentConverter.convert(File("a4.pdf"))
+                .to(File("a4.cbz"))
                 .execute()
     }
 
