@@ -24,6 +24,7 @@
         <java.version>1.8</java.version>
         <kotlin.version>1.2.71</kotlin.version>
         <jodconverter.version>4.2.2</jodconverter.version>
+        <zt-zip.version>1.13</zt-zip.version>
     </properties>
 
     <dependencies>
@@ -73,6 +74,12 @@
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-zip</artifactId>
+            <version>${zt-zip.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import org.zeroturnaround.zip.ZipUtil
 import java.io.File
 
 @RunWith(SpringRunner::class)
@@ -26,6 +27,7 @@ class JodconverterServerApplicationTests {
         documentConverter.convert(File("a4.pdf"))
                 .to(File("a4.cbz"))
                 .execute()
+        ZipUtil.unpack(File("a4.cbz"), File("a4.cbz".substringBeforeLast(".")))
     }
 
 }
