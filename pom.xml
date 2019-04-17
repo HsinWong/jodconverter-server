@@ -5,7 +5,7 @@
 
     <groupId>me.hebaceous</groupId>
     <artifactId>jodconverter-server</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>latest</version>
     <packaging>jar</packaging>
 
     <name>jodconverter-server</name>
@@ -85,6 +85,7 @@
     </dependencies>
 
     <build>
+        <finalName>app</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
@@ -119,18 +120,23 @@
             </plugin>
             <plugin>
                 <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>1.2.0</version>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.8</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <dockerDirectory>${project.basedir}</dockerDirectory>
-                    <imageName>registry.cn-shanghai.aliyuncs.com/hsinwong/jodconverter-server</imageName>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
+                    <contextDirectory>docker-context</contextDirectory>
+                    <repository>registry.cn-shanghai.aliyuncs.com/hsinwong/jodconverter-server</repository>
+                    <tag>${project.version}</tag>
+                    <buildDirectory>${project.build.directory}</buildDirectory>
+                    <finalName>${project.build.finalName}</finalName>
                 </configuration>
             </plugin>
         </plugins>

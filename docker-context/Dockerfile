@@ -25,4 +25,4 @@ EXPOSE 9980
 ENTRYPOINT ["./start.sh"]
 
 # 字体文件放在 /var/lib/docker/volumes/fonts/_data/ 目录中
-# docker run -d -p 9980:9980 -v fonts:/usr/share/fonts/custom --restart unless-stopped --name jodconverter-server registry.cn-hangzhou.aliyuncs.com/hsinwong/jodconverter-server
+# docker run -d -p 9980:9980 -v fonts:/usr/share/fonts/custom --restart unless-stopped --name jodconverter-server registry.cn-shanghai.aliyuncs.com/hsinwong/jodconverter-server
