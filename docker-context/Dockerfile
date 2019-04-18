@@ -10,10 +10,10 @@ VOLUME ["/tmp", "/usr/share/fonts/custom"]
 
 RUN apt-get update && apt-get install -y apt-transport-https
 COPY sources.list /etc/apt/sources.list
-ADD mupdf-1.14.0-source.tar.xz /usr/local/src
+COPY mupdf_1.14.0-xenial-1_amd64.deb /opt
 RUN apt-get update && apt-get -y upgrade && \
-    apt-get install -y locales-all openjdk-8-jdk libreoffice pdf2htmlex inotify-tools psmisc build-essential pkg-config && \
-    cd /usr/local/src/mupdf-1.14.0-source && make HAVE_X11=no HAVE_GLUT=no prefix=/usr/local install && \
+    apt-get install -y locales-all openjdk-8-jdk libreoffice pdf2htmlex inotify-tools psmisc && \
+    dpkg -i /opt/mupdf_1.14.0-xenial-1_amd64.deb && \
     rm -rf /var/lib/apt/lists/*
 
 COPY app.jar start.sh /
