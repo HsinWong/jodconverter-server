@@ -1,5 +1,5 @@
 server:
-  port: 9980
+  port: 9999
 
 management:
   endpoints:

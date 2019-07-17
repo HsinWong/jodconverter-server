@@ -32,12 +32,14 @@ class JodconverterHandler(@Qualifier("localDocumentConverter") val documentConve
             val format = (it?.getFirst("format") as FormFieldPart?)?.value() ?: request.pathVariable("format")
             val isToHtml = format.equals("html", true)
             val isToCbz = format.equals("cbz", true)
+            logger.info("convert begin. format:{}", format)
 
             val data = it?.getFirst("data") as FilePart?
                     ?: return@flatMap ServerResponse.badRequest().body(fromObject("missing data"))
             val sourceFileExtension = data.filename().substringAfterLast('.', "").toLowerCase()
             if (sourceFileExtension == "") return@flatMap ServerResponse.badRequest().body(fromObject("missing data file extension"))
             val isFromPdf = sourceFileExtension == "pdf"
+            logger.info("convert. isFromPdf:{}", isFromPdf)
 
             val sourceTempFile = createTempFile(suffix = ".$sourceFileExtension", directory = jodconverterTempDir)
             data.transferTo(sourceTempFile).subscribe()

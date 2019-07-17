@@ -147,25 +147,25 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.8</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <contextDirectory>docker-context</contextDirectory>
-                    <repository>registry.cn-shanghai.aliyuncs.com/hsinwong/jodconverter-server</repository>
-                    <tag>latest</tag>
-                    <retryCount>0</retryCount>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.spotify</groupId>-->
+<!--                <artifactId>dockerfile-maven-plugin</artifactId>-->
+<!--                <version>1.4.8</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>default</id>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <contextDirectory>docker-context</contextDirectory>-->
+<!--                    <repository>registry.cn-shanghai.aliyuncs.com/hsinwong/jodconverter-server</repository>-->
+<!--                    <tag>latest</tag>-->
+<!--                    <retryCount>0</retryCount>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
