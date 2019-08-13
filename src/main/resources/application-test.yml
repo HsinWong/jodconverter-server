@@ -15,10 +15,10 @@ spring:
 
 jodconverter:
   local:
-    enabled: true
+    enabled: false
     port-numbers: 2002,2003
   online:
-    enabled: false
+    enabled: true
     url: http://192.168.60.59:9980/
 
 mupdf:
