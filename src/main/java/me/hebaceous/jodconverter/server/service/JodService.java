@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 @Service
@@ -23,8 +25,13 @@ public class JodService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JodService.class);
 
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
     @Autowired
     private DocumentConverter documentConverter;
+
+    @Value("${temp-file-retain-seconds}")
+    private Long tempFileRetainSeconds;
 
     @Value("${mupdf.max-width}")
     private Integer maxWidth;
@@ -111,19 +118,28 @@ public class JodService {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(fixedRate = 10 * 60 * 1000)
     public void deleteTempFilesSchedule() {
-        LOGGER.debug("start deleteTempFilesSchedule");
+        LOGGER.info("start deleteTempFilesSchedule");
         File[] files = tempDir.toFile().listFiles();
         if (files != null) {
             for (File file : files) {
-                boolean isFailed = !FileSystemUtils.deleteRecursively(file);
-                if (isFailed) {
-                    LOGGER.error("deleteTempFilesSchedule error. deleteRecursively file:{} failed.", file.getAbsolutePath());
+                long current = System.currentTimeMillis();
+                long lastModified = file.lastModified();
+                if (current - lastModified > tempFileRetainSeconds * 1000) {
+                    boolean isFailed = !FileSystemUtils.deleteRecursively(file);
+
+                    SimpleDateFormat simpleDateFormat = SIMPLE_DATE_FORMAT_THREAD_LOCAL.get();
+                    LOGGER.info("deleteTempFilesSchedule. file:{}, current:{}, lastModified:{}", file.getName(),
+                            simpleDateFormat.format(new Date(current)), simpleDateFormat.format(new Date(lastModified)));
+
+                    if (isFailed) {
+                        LOGGER.error("deleteTempFilesSchedule error. file:{}", file.getName());
+                    }
                 }
             }
         }
-        LOGGER.debug("end deleteTempFilesSchedule");
+        LOGGER.info("end deleteTempFilesSchedule");
     }
 
 }

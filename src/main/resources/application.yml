@@ -17,6 +17,8 @@ logging:
   level:
     me.hebaceous.jodconverter.server: debug
 
+temp-file-retain-seconds: 3600
+
 jodconverter:
   local:
     enabled: true
