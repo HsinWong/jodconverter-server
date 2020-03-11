@@ -4,7 +4,11 @@ MAINTAINER xinh xinh@xinshiyun.com
 
 # 加速
 ADD sources.list /etc/apt/sources.list
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https && sed -i 's/http/https/g' /etc/apt/sources.list
+
+# 时区
+ENV timezone Asia/Shanghai
+RUN apt-get install tzdata && ln -fs /usr/share/zoneinfo/$timezone /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 # libreoffice6.3 & mupdf1.14.0 & pdf2htmlex & jdk8
 ADD deb/* /home/install/
