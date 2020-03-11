@@ -13,6 +13,10 @@ spring:
       max-file-size: -1
       max-request-size: -1
 
+logging:
+  level:
+    me.hebaceous.jodconverter.server: debug
+
 jodconverter:
   local:
     enabled: true

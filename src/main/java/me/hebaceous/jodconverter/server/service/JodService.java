@@ -6,14 +6,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 @Service
+@EnableScheduling
 public class JodService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JodService.class);
@@ -27,26 +32,28 @@ public class JodService {
     @Value("${mupdf.max-height}")
     private Integer maxHeight;
 
-    private Path tempDir = Files.createTempDirectory("jodconverter");
+    private final Path tempDir;
 
     public JodService() throws IOException {
+        tempDir = Files.createTempDirectory("jodconverter");
+        LOGGER.info("use tempDir:{}", tempDir.toFile().getAbsolutePath());
     }
 
     public File convert(MultipartFile file, String targetFormat) throws IOException, OfficeException, InterruptedException {
-        String fileName = file.getOriginalFilename();
+        String fileName = Objects.requireNonNull(file.getOriginalFilename());
         LOGGER.info("name: {}, isEmpty: {}, targetFormat: {}", fileName, file.isEmpty(), targetFormat);
 
         String sourceFormat = fileName.substring(fileName.lastIndexOf('.') + 1);
         File sourceTempFile = Files.createTempFile(tempDir, "", "." + sourceFormat).toFile();
         file.transferTo(sourceTempFile);
 
+        String tempPath = sourceTempFile.getAbsolutePath().substring(0, sourceTempFile.getAbsolutePath().lastIndexOf('.') + 1);
+        File targetTempFile = new File(tempPath + targetFormat);
+
+
         boolean isToHtml = "html".equalsIgnoreCase(targetFormat);
         boolean isToCbz = "cbz".equalsIgnoreCase(targetFormat);
         boolean isFromPdf = "pdf".equalsIgnoreCase(sourceFormat);
-
-        String tempPath = sourceTempFile.getAbsolutePath().substring(0, sourceTempFile.getAbsolutePath().lastIndexOf('.') + 1);
-
-        File targetTempFile = new File(tempPath + targetFormat);
 
         if (!isToHtml && !isToCbz) {
             try {
@@ -87,7 +94,7 @@ public class JodService {
     }
 
     private void solveStd(Process proc) throws IOException {
-        String line = null;
+        String line;
 
         InputStream stderr = proc.getErrorStream();
         InputStreamReader esr = new InputStreamReader(stderr);
@@ -102,6 +109,21 @@ public class JodService {
         while ((line = obr.readLine()) != null) {
             LOGGER.debug("exec: {}", line);
         }
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void deleteTempFilesSchedule() {
+        LOGGER.debug("start deleteTempFilesSchedule");
+        File[] files = tempDir.toFile().listFiles();
+        if (files != null) {
+            for (File file : files) {
+                boolean isFailed = !FileSystemUtils.deleteRecursively(file);
+                if (isFailed) {
+                    LOGGER.error("deleteTempFilesSchedule error. deleteRecursively file:{} failed.", file.getAbsolutePath());
+                }
+            }
+        }
+        LOGGER.debug("end deleteTempFilesSchedule");
     }
 
 }
