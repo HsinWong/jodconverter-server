@@ -15,7 +15,7 @@ spring:
 
 logging:
   level:
-    me.hebaceous.jodconverter.server: debug
+    me.hebaceous.jodconverter.server: info
 
 temp-file-retain-seconds: 3600
 
@@ -23,6 +23,9 @@ jodconverter:
   local:
     enabled: true
     port-numbers: 2002,2003
+    processTimeout: 120000
+    taskExecutionTimeout: 600000
+    taskQueueTimeout: 30000
   online:
     enabled: false
     url: http://192.168.60.59:9980/

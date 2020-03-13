@@ -10,9 +10,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-htt
 ENV timezone Asia/Shanghai
 RUN apt-get install tzdata && ln -fs /usr/share/zoneinfo/$timezone /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
-# libreoffice6.3 & mupdf1.14.0 & pdf2htmlex & jdk8
+# openoffice4.1.7 & mupdf1.14.0 & pdf2htmlex & jdk8
 ADD deb/* /home/install/
-RUN cd /home/install && apt-get install -y ./* pdf2htmlex openjdk-8-jdk
+RUN cd /home/install && apt-get install -y ./* pdf2htmlex openjdk-8-jdk && rm -rf /home/install/
 
 COPY app.jar start.sh /
 RUN chmod a+x start.sh
