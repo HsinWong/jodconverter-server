@@ -73,14 +73,14 @@ public class JodService {
         }
 
         if (!isFromPdf) {
-            targetTempFile = new File(tempPath + "pdf");
+            File pdfTempFile = new File(tempPath + "pdf");
             try {
-                documentConverter.convert(sourceTempFile).to(targetTempFile).execute();
+                documentConverter.convert(sourceTempFile).to(pdfTempFile).execute();
             } catch (OfficeException e) {
                 throw new OfficeException(String.format("%s converting to %s failed. before to html or to cbz. the conversion on your file is not support.", sourceFormat, "pdf"));
             }
             LOGGER.info("{} converting to {} succeed. before to html or to cbz.", sourceFormat, "pdf");
-            sourceTempFile = targetTempFile;
+            sourceTempFile = pdfTempFile;
         }
 
         String exec = null;
