@@ -1,5 +1,12 @@
 package me.hebaceous.jodconverter.server.service;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.io.FileChannelRandomAccessSource;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.RandomAccessFileOrArray;
+import com.itextpdf.text.pdf.codec.TiffImage;
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.office.OfficeException;
 import org.slf4j.Logger;
@@ -13,6 +20,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -57,6 +65,30 @@ public class JodService {
         String tempPath = sourceTempFile.getAbsolutePath().substring(0, sourceTempFile.getAbsolutePath().lastIndexOf('.') + 1);
         File targetTempFile = new File(tempPath + targetFormat);
 
+        boolean isFromTiffToPdf = ("tif".equalsIgnoreCase(sourceFormat) || "tiff".equalsIgnoreCase(sourceFormat)) && "pdf".equalsIgnoreCase(targetFormat);
+        if (isFromTiffToPdf) {
+            try {
+                RandomAccessFileOrArray tiffRAF = new RandomAccessFileOrArray(new FileChannelRandomAccessSource(FileChannel.open(sourceTempFile.toPath())));
+                int numberOfPages = TiffImage.getNumberOfPages(tiffRAF);
+                Document document = new Document();
+                PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(targetTempFile));
+                pdfWriter.setStrictImageSequence(true);
+                document.open();
+                Image tempImage;
+                for (int i = 1; i <= numberOfPages; i++) {
+                    tempImage = TiffImage.getTiffImage(tiffRAF, i);
+                    Rectangle pageSize = new Rectangle(tempImage.getWidth(), tempImage.getHeight());
+                    document.setPageSize(pageSize);
+                    document.newPage();
+                    document.add(tempImage);
+                }
+                document.close();
+            } catch (Throwable t) {
+                throw new OfficeException(String.format("%s converting to %s failed. the conversion on your file is not support.", sourceFormat, targetFormat));
+            }
+            LOGGER.info("{} converting to {} succeed.", sourceFormat, targetFormat);
+            return targetTempFile;
+        }
 
         boolean isToHtml = "html".equalsIgnoreCase(targetFormat);
         boolean isToCbz = "cbz".equalsIgnoreCase(targetFormat);
